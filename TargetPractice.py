@@ -5,12 +5,10 @@ import pygame
 
 pygame.init()
 
-# Screen dimensions
 WIDTH, HEIGHT = 800, 600
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Aim Trainer")
 
-# Game settings
 TARGET_INTERVAL = 500
 NEW_TARGET_EVENT = pygame.USEREVENT
 TARGET_MARGIN = 30
@@ -89,20 +87,41 @@ def end_game(screen, elapsed_time, hits, total_clicks):
     hits_text = FONT.render(f"Hits: {hits}", True, "white")
     accuracy = round(hits / total_clicks * 100, 1) if total_clicks > 0 else 0
     accuracy_text = FONT.render(f"Accuracy: {accuracy}%", True, "white")
+    replay_text = FONT.render("Press SPACE or click to play again", True, "white")
 
     screen.blit(time_text, (center_text(time_text), 100))
-    screen.blit(speed_text, (center_text(speed_text), 200))
-    screen.blit(hits_text, (center_text(hits_text), 300))
-    screen.blit(accuracy_text, (center_text(accuracy_text), 400))
+    screen.blit(speed_text, (center_text(speed_text), 180))
+    screen.blit(hits_text, (center_text(hits_text), 260))
+    screen.blit(accuracy_text, (center_text(accuracy_text), 340))
+    bubble_color = (255, 255, 255)
+    text_color = (10, 30, 50)
+    bubble_text = "Press SPACE or click to play again"
+    replay_text = FONT.render(bubble_text, True, text_color)
+
+    bubble_width = replay_text.get_width() + 40
+    bubble_height = replay_text.get_height() + 20
+    bubble_x = WIDTH // 2 - bubble_width // 2
+    bubble_y = 430
+
+    pygame.draw.rect(screen, bubble_color, (bubble_x, bubble_y, bubble_width, bubble_height), border_radius=12)
+
+    screen.blit(replay_text, (WIDTH // 2 - replay_text.get_width() // 2, bubble_y + 10))
 
     pygame.display.update()
 
-    game_over = True
-    while game_over:
+    waiting = True
+    while waiting:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                waiting = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                waiting = False
+
+    main()  
+
 
 
 def center_text(text_surface):
